@@ -295,6 +295,7 @@ func TestCloudFoundryProvider_HasResources(t *testing.T) {
 	expectedResources := []string{
 		"cloudfoundry_org",
 		"cloudfoundry_org_quota",
+		"cloudfoundry_org_quota_assignment",
 		"cloudfoundry_space",
 		"cloudfoundry_user",
 		"cloudfoundry_space_quota",

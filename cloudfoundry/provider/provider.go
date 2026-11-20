@@ -300,6 +300,7 @@ func (p *CloudFoundryProvider) Resources(ctx context.Context) []func() resource.
 	return []func() resource.Resource{
 		NewOrgResource,
 		NewOrgQuotaResource,
+		NewOrgQuotaAssignmentResource,
 		NewSpaceResource,
 		NewUserResource,
 		NewSpaceQuotaResource,
