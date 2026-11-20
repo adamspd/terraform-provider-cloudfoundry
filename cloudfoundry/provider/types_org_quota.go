@@ -71,7 +71,7 @@ func (orgQuotaType *OrgQuotaType) mapOrgQuotaTypeToValues(ctx context.Context) (
 	if !orgQuotaType.TotalAppLogRateLimit.IsNull() {
 		orgQuota.WithLogRateLimitInBytesPerSecond(int(orgQuotaType.TotalAppLogRateLimit.ValueInt64()))
 	}
-	if !orgQuotaType.Organizations.IsNull() {
+	if !orgQuotaType.Organizations.IsNull() && !orgQuotaType.Organizations.IsUnknown() {
 		var orgQuotaRelOrgVal []string
 		diags = orgQuotaType.Organizations.ElementsAs(ctx, &orgQuotaRelOrgVal, false)
 		orgQuota.WithOrganizations(orgQuotaRelOrgVal...)

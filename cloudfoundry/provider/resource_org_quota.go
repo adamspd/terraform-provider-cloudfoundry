@@ -13,6 +13,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/identityschema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/samber/lo"
@@ -93,9 +95,13 @@ func (r *orgQuotaResource) Schema(_ context.Context, _ resource.SchemaRequest, r
 				Optional:            true,
 			},
 			"orgs": schema.SetAttribute{
-				MarkdownDescription: "Set of Org GUIDs to which this org quota would be assigned.",
+				MarkdownDescription: "Set of Org GUIDs to which this org quota would be assigned. Orgs assigned to the quota by other means, for example by `cloudfoundry_org_quota_assignment`, are read back but not removed.",
 				ElementType:         types.StringType,
 				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Set{
+					setplanmodifier.UseStateForUnknown(),
+				},
 				Validators: []validator.Set{
 					setvalidator.ValueStringsAre(validation.ValidUUID()),
 					setvalidator.SizeAtLeast(1),
@@ -235,6 +241,11 @@ func (r *orgQuotaResource) Update(ctx context.Context, req resource.UpdateReques
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
+	}
+
+	// "orgs" is unknown when it is not set in the configuration. Keep the orgs that are assigned already.
+	if orgQuotaTypePlan.Organizations.IsUnknown() {
+		orgQuotaTypePlan.Organizations = orgQuotaTypeState.Organizations
 	}
 
 	removed, added, diags := findChangedRelationsFromTFState(ctx, orgQuotaTypePlan.Organizations, orgQuotaTypeState.Organizations)

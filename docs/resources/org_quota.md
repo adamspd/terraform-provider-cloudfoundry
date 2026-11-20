@@ -55,7 +55,7 @@ output "guid" {
 ### Optional
 
 - `instance_memory` (Number) Maximum memory per application instance.
-- `orgs` (Set of String) Set of Org GUIDs to which this org quota would be assigned.
+- `orgs` (Set of String) Set of Org GUIDs to which this org quota would be assigned. Orgs assigned to the quota by other means, for example by `cloudfoundry_org_quota_assignment`, are read back but not removed.
 - `total_app_instances` (Number) Maximum app instances allowed.
 - `total_app_log_rate_limit` (Number) Maximum log rate allowed for all the started processes and running tasks in bytes/second.
 - `total_app_tasks` (Number) Maximum tasks allowed per app.
